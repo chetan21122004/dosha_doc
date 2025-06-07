@@ -158,6 +158,45 @@ const CartModal = ({ cart, cartTotal, removeFromCart, closeCart }) => {
                   />
                 </div>
 
+                {/* Payment Method Selection */}
+                <div className="space-y-3 pt-4 border-t">
+                  <h3 className="font-medium text-gray-700">Select Payment Method</h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        selectedPayment === 'upi'
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-200 hover:border-green-200'
+                      }`}
+                      onClick={() => setSelectedPayment('upi')}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                        </svg>
+                        <span className="font-medium">UPI</span>
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        selectedPayment === 'cod'
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-200 hover:border-green-200'
+                      }`}
+                      onClick={() => setSelectedPayment('cod')}
+                    >
+                      <div className="flex items-center space-x-3">
+                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span className="font-medium">Cash on Delivery</span>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+
                 <button
                   type="submit"
                   className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center space-x-2"
@@ -170,39 +209,75 @@ const CartModal = ({ cart, cartTotal, removeFromCart, closeCart }) => {
               </form>
             </div>
 
-            {/* Payment QR Code Section */}
-            <div className="border-t pt-8">
-              <h3 className="text-2xl font-semibold text-gray-800 mb-6">Scan & Pay</h3>
-              <div className="bg-white p-6 rounded-lg border-2 border-gray-100">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                  <div className="text-center space-y-6">
-                    <div>
-                      <div className="text-3xl font-bold text-green-600">₹{cartTotal}</div>
-                      <div className="text-gray-600 mt-1">Total Amount</div>
+            {/* Payment QR Code Section - Only show for UPI payment */}
+            {selectedPayment === 'upi' && (
+              <div className="border-t pt-8">
+                <h3 className="text-2xl font-semibold text-gray-800 mb-6">Scan & Pay</h3>
+                <div className="bg-white p-6 rounded-lg border-2 border-gray-100">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div className="text-center space-y-6">
+                      <div>
+                        <div className="text-3xl font-bold text-green-600">₹{cartTotal}</div>
+                        <div className="text-gray-600 mt-1">Total Amount</div>
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        <p>Scan with any UPI app to pay</p>
+                        <p className="font-medium mt-2">UPI ID: morechetan9@ibl</p>
+                      </div>
+                      <div className="flex justify-center space-x-6">
+                        <img src="/gpay.svg" alt="Google Pay" className="h-8" />
+                        <img src="/phonepe.svg" alt="PhonePe" className="h-8" />
+                        <img src="/paytm.svg" alt="Paytm" className="h-8" />
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-600">
-                      <p>Scan with any UPI app to pay</p>
-                      <p className="font-medium mt-2">UPI ID: morechetan9@ibl</p>
-                    </div>
-                    <div className="flex justify-center space-x-6">
-                      <img src="/gpay.svg" alt="Google Pay" className="h-8" />
-                      <img src="/phonepe.svg" alt="PhonePe" className="h-8" />
-                      <img src="/paytm.svg" alt="Paytm" className="h-8" />
-                    </div>
-                  </div>
-                  <div className="flex justify-center">
-                    <div className="bg-white p-4 rounded-lg shadow-lg">
-                      <QRCodeSVG 
-                        value={generateUPILink()}
-                        size={200}
-                        level="H"
-                        includeMargin={true}
-                      />
+                    <div className="flex justify-center">
+                      <div className="bg-white p-4 rounded-lg shadow-lg">
+                        <QRCodeSVG 
+                          value={generateUPILink()}
+                          size={200}
+                          level="H"
+                          includeMargin={true}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* COD Info - Only show for COD payment */}
+            {selectedPayment === 'cod' && (
+              <div className="border-t pt-8">
+                <h3 className="text-2xl font-semibold text-gray-800 mb-6">Cash on Delivery</h3>
+                <div className="bg-white p-6 rounded-lg border-2 border-gray-100">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="bg-green-100 p-3 rounded-full">
+                      <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="font-medium text-gray-800">Pay when your order arrives</h4>
+                      <p className="text-gray-600 text-sm mt-1">Amount: ₹{cartTotal}</p>
+                    </div>
+                  </div>
+                  <ul className="space-y-2 text-gray-600 text-sm">
+                    <li className="flex items-start space-x-2">
+                      <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>Keep exact change ready for a contactless delivery</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span>We'll send you delivery updates via SMS and email</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </motion.div>
         );
 
