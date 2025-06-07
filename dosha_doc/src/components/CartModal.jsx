@@ -16,6 +16,8 @@ const CartModal = ({ cart, cartTotal, removeFromCart, closeCart }) => {
     pincode: '',
     description: ''
   });
+  const [paymentScreenshot, setPaymentScreenshot] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
 
   const [state, handleFormspreeSubmit] = useForm("xkgboazb");
 
@@ -31,24 +33,47 @@ const CartModal = ({ cart, cartTotal, removeFromCart, closeCart }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setPaymentScreenshot(file);
+      // Create a preview URL for the image
+      const previewUrl = URL.createObjectURL(file);
+      setFilePreview(previewUrl);
+    }
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     
-    const orderDetails = {
-      customerDetails: formData,
-      orderItems: cart.map(item => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-        total: item.price * item.quantity
-      })),
-      paymentMethod: selectedPayment,
-      totalAmount: cartTotal,
-      upiId: selectedPayment === 'upi' ? 'daisiyak16@oksbi' : 'N/A'
-    };
+    // Create form data object to include the file
+    const formDataObj = new FormData();
+    
+    // Add customer details
+    Object.keys(formData).forEach(key => {
+      formDataObj.append(`customerDetails[${key}]`, formData[key]);
+    });
+    
+    // Add order items
+    cart.forEach((item, index) => {
+      formDataObj.append(`orderItems[${index}][name]`, item.name);
+      formDataObj.append(`orderItems[${index}][quantity]`, item.quantity);
+      formDataObj.append(`orderItems[${index}][price]`, item.price);
+      formDataObj.append(`orderItems[${index}][total]`, item.price * item.quantity);
+    });
+    
+    // Add payment method and total
+    formDataObj.append('paymentMethod', selectedPayment);
+    formDataObj.append('totalAmount', cartTotal);
+    formDataObj.append('upiId', selectedPayment === 'upi' ? 'daisiyak16@oksbi' : 'N/A');
+    
+    // Add payment screenshot if available
+    if (paymentScreenshot && selectedPayment === 'upi') {
+      formDataObj.append('paymentScreenshot', paymentScreenshot);
+    }
 
     try {
-      await handleFormspreeSubmit(orderDetails);
+      await handleFormspreeSubmit(formDataObj);
       // Close the modal immediately after submission
       closeCart();
     } catch (error) {
@@ -197,6 +222,64 @@ const CartModal = ({ cart, cartTotal, removeFromCart, closeCart }) => {
                   </div>
                 </div>
 
+                {/* UPI Payment Screenshot Upload - Only show for UPI payment */}
+                {selectedPayment === 'upi' && (
+                  <div className="space-y-3 pt-4 border-t">
+                    <h3 className="font-medium text-gray-700">Upload Payment Screenshot</h3>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="flex flex-col items-center space-y-4">
+                        <div className="w-full">
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              {!filePreview ? (
+                                <>
+                                  <svg className="w-8 h-8 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                  </svg>
+                                  <p className="mb-1 text-sm text-gray-500">
+                                    <span className="font-semibold">Click to upload</span> or drag and drop
+                                  </p>
+                                  <p className="text-xs text-gray-500">PNG, JPG or JPEG (MAX. 2MB)</p>
+                                </>
+                              ) : (
+                                <div className="relative w-full h-full flex items-center justify-center">
+                                  <img 
+                                    src={filePreview} 
+                                    alt="Payment screenshot preview" 
+                                    className="max-h-28 max-w-full object-contain"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => {
+                                      setPaymentScreenshot(null);
+                                      setFilePreview(null);
+                                    }}
+                                    className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                            <input 
+                              type="file" 
+                              className="hidden" 
+                              accept="image/*"
+                              onChange={handleFileChange}
+                              required={selectedPayment === 'upi'}
+                            />
+                          </label>
+                        </div>
+                        {filePreview && (
+                          <p className="text-sm text-green-600">Screenshot uploaded successfully!</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <button
                   type="submit"
                   className="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition-colors font-medium flex items-center justify-center space-x-2"
@@ -222,7 +305,7 @@ const CartModal = ({ cart, cartTotal, removeFromCart, closeCart }) => {
                       </div>
                       <div className="text-sm text-gray-600">
                         <p>Scan with any UPI app to pay</p>
-                        <p className="font-medium mt-2">UPI ID: morechetan9@ibl</p>
+                        <p className="font-medium mt-2">UPI ID: daisiyak16@oksbi</p>
                       </div>
                       <div className="flex justify-center space-x-6">
                         <img src="/gpay.svg" alt="Google Pay" className="h-8" />

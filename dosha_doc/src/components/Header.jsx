@@ -12,6 +12,7 @@ const Header = ({ cartCount, openCart }) => {
       <div className="max-w-[1440px] mx-auto w-full py-4">
         <div className="flex justify-between items-center">
           <div className="flex items-center">
+            <img src="/logo.jpg" alt="The Dosha Doctor Logo" className="h-22 mr-3" />
             <h1 className="text-2xl font-bold">
               The <span className="text-amber-500">Dosha</span> Doctor
             </h1>
