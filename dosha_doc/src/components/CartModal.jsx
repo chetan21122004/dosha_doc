@@ -17,7 +17,7 @@ const CartModal = ({ cart, cartTotal, removeFromCart, closeCart }) => {
     description: ''
   });
 
-  const [state, handleFormspreeSubmit] = useForm("mldngzop");
+  const [state, handleFormspreeSubmit] = useForm("xkgboazb");
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -44,7 +44,7 @@ const CartModal = ({ cart, cartTotal, removeFromCart, closeCart }) => {
       })),
       paymentMethod: selectedPayment,
       totalAmount: cartTotal,
-      upiId: selectedPayment === 'upi' ? 'morechetan9@ibl' : 'N/A'
+      upiId: selectedPayment === 'upi' ? 'daisiyak16@oksbi' : 'N/A'
     };
 
     try {
@@ -57,7 +57,7 @@ const CartModal = ({ cart, cartTotal, removeFromCart, closeCart }) => {
   };
 
   const generateUPILink = () => {
-    const upiId = "morechetan9@ibl";
+    const upiId = "daisiyak16@oksbi";
     const amount = cartTotal;
     return `upi://pay?pa=${upiId}&pn=DoshaDoc&am=${amount}&cu=INR&tn=Payment for Order`;
   };
